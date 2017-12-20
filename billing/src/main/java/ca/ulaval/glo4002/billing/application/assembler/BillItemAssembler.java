@@ -1,14 +1,14 @@
 package ca.ulaval.glo4002.billing.application.assembler;
 
 import ca.ulaval.glo4002.billing.application.dto.BillItemDto;
-import ca.ulaval.glo4002.billing.domain.bill.BillItem;
+import ca.ulaval.glo4002.billing.domain.BillItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BillItemAssembler {
 
-    public static List<BillItem> createBillItemFromDto(List<BillItemDto> billItemsDto) {
+    public List<BillItem> createBillItemFromDto(List<BillItemDto> billItemsDto) {
         List<BillItem> billItems = new ArrayList<>();
 
         for (BillItemDto billItemDto : billItemsDto) {

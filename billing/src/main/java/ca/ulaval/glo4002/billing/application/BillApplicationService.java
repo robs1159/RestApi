@@ -4,54 +4,59 @@ import ca.ulaval.glo4002.billing.application.assembler.BillAssembler;
 import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
 import ca.ulaval.glo4002.billing.application.dto.BillDto;
 import ca.ulaval.glo4002.billing.application.dto.BillItemDto;
-import ca.ulaval.glo4002.billing.application.dto.BillToReturnDto;
-import ca.ulaval.glo4002.billing.application.exceptions.BillAlreadyAcceptedException;
-import ca.ulaval.glo4002.billing.application.exceptions.BillItemAsANegativeValueException;
-import ca.ulaval.glo4002.billing.application.exceptions.BillNotFoundException;
-import ca.ulaval.glo4002.billing.domain.bill.Bill;
-import ca.ulaval.glo4002.billing.domain.bill.BillId;
-import ca.ulaval.glo4002.billing.domain.bill.repositories.BillRepository;
-import ca.ulaval.glo4002.billing.domain.bill.repositories.CrmRepository;
-import ca.ulaval.glo4002.crmInterface.application.repositories.ClientNotFoundException;
-import ca.ulaval.glo4002.crmInterface.application.repositories.ProductNotFoundException;
-import ca.ulaval.glo4002.crmInterface.domain.ClientId;
+import ca.ulaval.glo4002.billing.application.repositories.BillItemAsANegativeValueException;
+import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
+import ca.ulaval.glo4002.billing.domain.Bill;
+import ca.ulaval.glo4002.billing.domain.BillId;
+import ca.ulaval.glo4002.billing.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.exceptions.BillAlreadyAcceptedException;
+import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
+import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
+import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
+import ca.ulaval.glo4002.billing.domain.repositories.ClientRepository;
+import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-public class BillApplicationService implements BillPaymentOperation {
+public class BillApplicationService {
 
     private BillAssembler billAssembler;
     private BillRepository billRepository;
-    private CrmRepository crmRepository;
-
+    private ClientRepository clientRepository;
+    private ProductRepository productRepository;
 
     @Inject
-    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, CrmRepository crmRepository) {
+    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, ClientRepository clientRepository, ProductRepository productRepository) {
         this.billAssembler = billAssembler;
         this.billRepository = billRepository;
-        this.crmRepository = crmRepository;
+        this.clientRepository = clientRepository;
+        this.productRepository = productRepository;
     }
 
-    public BillToReturnDto createBill(BillDto billDto) throws ClientNotFoundException, ProductNotFoundException, BillItemAsANegativeValueException {
+    public BillDto createBill(BillDto billDto) throws ClientNotFoundException, ProductNotFoundException, BillItemAsANegativeValueException {
+        BillDto billToReturnDto = null;
 
-        BillToReturnDto billToReturnDto = null;
-
-        if (crmRepository.isClientExist(billDto.clientId)) {
+        if (clientRepository.getClient(billDto.clientId) != null) {
             assignDueTerm(billDto);
             validateProduct(billDto.items);
 
-            Bill bill = BillAssembler.createBillFromDto(billDto);
+            Bill bill = billAssembler.createBillFromDto(billDto);
             billRepository.insert(bill);
             billToReturnDto = billAssembler.toDto(bill);
         } else {
             throw new ClientNotFoundException(billDto.clientId);
         }
         return billToReturnDto;
+    }
+
+    private void validateProduct(List<BillItemDto> billItemsDto) throws ProductNotFoundException, BillItemAsANegativeValueException {
+        for (BillItemDto billItemDto : billItemsDto) {
+            productRepository.exist(billItemDto.productId);
+        }
     }
 
     public AcceptedBillToReturnDto acceptQuote(BillId billId) throws BillNotFoundException, BillAlreadyAcceptedException {
@@ -64,35 +69,35 @@ public class BillApplicationService implements BillPaymentOperation {
             throw new BillNotFoundException(billId);
         }
 
-        return billAssembler.toAcceptedDtoReturn(bill.get());
+        return billAssembler.toAcceptedDto(bill.get());
     }
 
-    private void validateProduct(List<BillItemDto> billItemsDto) throws ProductNotFoundException, BillItemAsANegativeValueException {
-        for (BillItemDto tmpBillItemDto : billItemsDto) {
+    public void deleteQuote(BillId billId) throws BillNotFoundException, BillAlreadyAcceptedException {
+        Optional<Bill> bill = billRepository.findBillById(billId);
 
-            crmRepository.findProductById(tmpBillItemDto.productId);
+        if (bill.isPresent()) {
+            bill.get().deleteQuote();
 
-            if (tmpBillItemDto.price.compareTo(BigDecimal.ZERO) < 0 || tmpBillItemDto.quantity < 0) {
-                throw new BillItemAsANegativeValueException(tmpBillItemDto.productId);
-            }
+            payOldestBill(bill.get().getClientId(), bill.get().getAmountPaid());
+
+            billRepository.update(bill.get());
+        } else {
+            throw new BillNotFoundException(billId);
         }
     }
 
     private void assignDueTerm(BillDto billDto) throws ClientNotFoundException {
         if (billDto.dueTerm == null) {
-            billDto.dueTerm = crmRepository.getDefaultTermForClient(billDto.clientId);
+            billDto.dueTerm = clientRepository.getDefaultDueTerm(billDto.clientId);
         }
     }
 
-    @Override
     public void payOldestBill(ClientId clientId, BigDecimal amount) {
         List<Bill> clientBills = billRepository.findBillsByClientIdOrderedByOldestExpectedPayment(clientId);
         Bill billToPay = null;
 
-        for (Iterator<Bill> billIterator = clientBills.iterator(); billIterator.hasNext(); ) {
-            Bill bill = billIterator.next();
-
-            if (!bill.isPaid()) {
+        for (Bill bill : clientBills) {
+            if (!bill.isPaid() && bill.isActive()) {
                 billToPay = bill;
                 break;
             }
@@ -100,6 +105,8 @@ public class BillApplicationService implements BillPaymentOperation {
 
         if (billToPay != null) {
             billToPay.pay(amount);
+        } else {
+            clientBills.get(clientBills.size()).pay(amount);
         }
     }
 }

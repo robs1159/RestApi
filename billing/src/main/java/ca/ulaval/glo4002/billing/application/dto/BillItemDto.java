@@ -1,7 +1,6 @@
 package ca.ulaval.glo4002.billing.application.dto;
 
-
-import ca.ulaval.glo4002.crmInterface.domain.ProductId;
+import ca.ulaval.glo4002.billing.domain.ProductId;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;

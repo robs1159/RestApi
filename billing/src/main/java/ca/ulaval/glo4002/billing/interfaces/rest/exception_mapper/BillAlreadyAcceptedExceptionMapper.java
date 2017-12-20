@@ -1,10 +1,10 @@
 package ca.ulaval.glo4002.billing.interfaces.rest.exception_mapper;
 
-import ca.ulaval.glo4002.billing.application.assembler.ErrorAssembler;
-import ca.ulaval.glo4002.billing.application.assembler.ErrorItemAssembler;
+import ca.ulaval.glo4002.billing.application.ErrorFactory;
+import ca.ulaval.glo4002.billing.application.ErrorItemFactory;
 import ca.ulaval.glo4002.billing.application.dto.ErrorDto;
 import ca.ulaval.glo4002.billing.application.dto.ErrorItemDto;
-import ca.ulaval.glo4002.billing.application.exceptions.BillAlreadyAcceptedException;
+import ca.ulaval.glo4002.billing.domain.exceptions.BillAlreadyAcceptedException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,8 +22,8 @@ public class BillAlreadyAcceptedExceptionMapper implements ExceptionMapper<BillA
     }
 
     private ErrorDto createErrorDto() {
-        ErrorItemDto errorItemDto = ErrorItemAssembler.createErrorItemDto(ERROR_TYPE, DESCRIPTION, ENTITY);
+        ErrorItemDto errorItemDto = ErrorItemFactory.createErrorItemDto(ERROR_TYPE, DESCRIPTION, ENTITY);
 
-        return ErrorAssembler.createErrorDto(errorItemDto);
+        return ErrorFactory.createErrorDto(errorItemDto);
     }
 }

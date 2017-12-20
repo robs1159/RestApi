@@ -9,8 +9,6 @@
         <module name="application" />
         <module name="billing" />
         <module name="crm" />
-        <module name="crmInterface" />
-        <module name="payment" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

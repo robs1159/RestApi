@@ -31,7 +31,7 @@ public class BillingServer implements Runnable {
         server = new Server(PORT);
         contextHandler = new ServletContextHandler(server, "/");
 
-        ResourceConfig packageConfig = new ResourceConfig().packages("ca.ulaval.glo4002.crmInterface", "ca.ulaval.glo4002.billing", "ca.ulaval.glo4002.payment");
+        ResourceConfig packageConfig = new ResourceConfig().packages("ca.ulaval.glo4002.billing");
 
         packageConfig.register(new CharsetResponseFilter());
         packageConfig.registerInstances(new ClientNotFoundExceptionMapper(), new ProductNotFoundExceptionMapper(), new BillAlreadyAcceptedExceptionMapper(), new BillNotFoundExceptionMapper());

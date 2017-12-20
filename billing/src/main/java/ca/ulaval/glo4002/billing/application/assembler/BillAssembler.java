@@ -2,35 +2,36 @@ package ca.ulaval.glo4002.billing.application.assembler;
 
 import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
 import ca.ulaval.glo4002.billing.application.dto.BillDto;
-import ca.ulaval.glo4002.billing.application.dto.BillToReturnDto;
-import ca.ulaval.glo4002.billing.domain.bill.Bill;
-import ca.ulaval.glo4002.billing.domain.bill.BillId;
+import ca.ulaval.glo4002.billing.domain.Bill;
+import ca.ulaval.glo4002.billing.domain.BillId;
 
 public class BillAssembler {
 
     private static final String BILLS_URI = "/bills/";
 
-    public BillToReturnDto toDto(Bill bill) {
-        BillToReturnDto billToReturnDto = new BillToReturnDto();
+    public BillDto toDto(Bill bill) {
+        BillDto billDto = new BillDto();
         BillId billId = bill.getId();
 
-        billToReturnDto.id = billId.getBillId();
-        billToReturnDto.total = bill.calculateTotal();
-        billToReturnDto.dueTerm = bill.getDueTerm();
-        billToReturnDto.url = this.buildBillURI(billId);
+        billDto.id = billId.getId();
+        billDto.total = bill.calculateTotal();
+        billDto.dueTerm = bill.getDueTerm();
+        billDto.url = this.buildBillURI(billId);
+        billDto.clientId = bill.getClientId();
+        billDto.creationDate = bill.getCreationDate();
 
-        return billToReturnDto;
+        return billDto;
     }
 
-    public static Bill createBillFromDto(BillDto billDto) {
-        return new Bill(billDto.clientId, billDto.creationDate, billDto.dueTerm, BillItemAssembler.createBillItemFromDto(billDto.items));
+    public Bill createBillFromDto(BillDto billDto) {
+        return new Bill(billDto.clientId, billDto.creationDate, billDto.dueTerm, (new BillItemAssembler()).createBillItemFromDto(billDto.items));
     }
 
-    public AcceptedBillToReturnDto toAcceptedDtoReturn(Bill bill) {
+    public AcceptedBillToReturnDto toAcceptedDto(Bill bill) {
         AcceptedBillToReturnDto acceptedBillToReturnDto = new AcceptedBillToReturnDto();
         BillId billId = bill.getId();
 
-        acceptedBillToReturnDto.id = billId.getBillId();
+        acceptedBillToReturnDto.id = billId.getId();
         acceptedBillToReturnDto.dueTerm = bill.getDueTerm();
         acceptedBillToReturnDto.url = this.buildBillURI(billId);
         acceptedBillToReturnDto.effectiveDate = bill.getEffectiveDate();
@@ -39,8 +40,7 @@ public class BillAssembler {
         return acceptedBillToReturnDto;
     }
 
-
     private String buildBillURI(BillId billId) {
-        return BILLS_URI + billId.getBillId();
+        return BILLS_URI + billId.getId();
     }
 }

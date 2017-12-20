@@ -12,9 +12,7 @@
     <modules>
         <module>crm</module>
         <module>billing</module>
-        <module>payment</module>
         <module>application</module>
-        <module>crmInterface</module>
     </modules>
 
     <properties>

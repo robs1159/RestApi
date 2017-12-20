@@ -1,12 +1,13 @@
 package ca.ulaval.glo4002.billing.infrastructure.persistence;
 
-import ca.ulaval.glo4002.billing.domain.bill.Bill;
-import ca.ulaval.glo4002.billing.domain.bill.BillId;
-import ca.ulaval.glo4002.billing.domain.bill.repositories.BillRepository;
-import ca.ulaval.glo4002.crmInterface.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.Bill;
+import ca.ulaval.glo4002.billing.domain.BillId;
+import ca.ulaval.glo4002.billing.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 
 import java.util.*;
 
+//TODO: faire des tests unitaire
 public class InMemoryBillRepository implements BillRepository {
     private static final Map<BillId, Bill> BILLS = new HashMap<>();
 

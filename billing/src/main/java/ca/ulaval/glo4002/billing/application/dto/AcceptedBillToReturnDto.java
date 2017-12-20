@@ -1,6 +1,6 @@
 package ca.ulaval.glo4002.billing.application.dto;
 
-import ca.ulaval.glo4002.crmInterface.domain.DueTerm;
+import ca.ulaval.glo4002.billing.domain.DueTerm;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;

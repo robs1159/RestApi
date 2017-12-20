@@ -6,7 +6,7 @@ import com.google.inject.Injector;
 
 public class BillApplicationServiceFactory {
 
-    public static BillApplicationService getBillApplicationService() {
+    public BillApplicationService getBillApplicationService() {
         Injector injector = Guice.createInjector(new BillApplicationServiceModule());
         return injector.getInstance(BillApplicationService.class);
     }

@@ -1,8 +1,8 @@
 package ca.ulaval.glo4002.application;
 
 import ca.ulaval.glo4002.billing.BillingServer;
+import ca.ulaval.glo4002.billing.interfaces.rest.filters.EntityManagerContextFilter;
 import ca.ulaval.glo4002.crm.CrmServer;
-import ca.ulaval.glo4002.payment.interfaces.rest.filters.EntityManagerPaymentContextFilter;
 
 public class ApplicationServer {
 
@@ -17,7 +17,7 @@ public class ApplicationServer {
 
         billing.join();
 
-        billingServer.addFilterToCurrentServer(EntityManagerPaymentContextFilter.class);
+        billingServer.addFilterToCurrentServer(EntityManagerContextFilter.class);
         billingServer.startServer();
     }
 }

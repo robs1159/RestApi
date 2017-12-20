@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/application/application.iml" filepath="$PROJECT_DIR$/application/application.iml" />
       <module fileurl="file://$PROJECT_DIR$/billing/billing.iml" filepath="$PROJECT_DIR$/billing/billing.iml" />
       <module fileurl="file://$PROJECT_DIR$/crm/crm.iml" filepath="$PROJECT_DIR$/crm/crm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/crmInterface/crmInterface.iml" filepath="$PROJECT_DIR$/crmInterface/crmInterface.iml" />
-      <module fileurl="file://$PROJECT_DIR$/payment/payment.iml" filepath="$PROJECT_DIR$/payment/payment.iml" />
       <module fileurl="file://$PROJECT_DIR$/projet2017.iml" filepath="$PROJECT_DIR$/projet2017.iml" />
     </modules>
   </component>
