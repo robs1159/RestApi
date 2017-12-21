@@ -77,7 +77,7 @@ public class BillApplicationService {
         return billAssembler.toAcceptedDto(bill.get());
     }
 
-    public void deleteQuote(BillId billId) throws BillNotFoundException, BillAlreadyAcceptedException {
+    public BillDto deleteQuote(BillId billId) throws BillNotFoundException, BillAlreadyAcceptedException {
         Optional<Bill> bill = billRepository.findBillById(billId);
 
         if (bill.isPresent()) {
@@ -89,6 +89,7 @@ public class BillApplicationService {
         } else {
             throw new BillNotFoundException(billId);
         }
+        return new BillDto();
     }
 
     private void assignDueTerm(BillDto billDto) throws ClientNotFoundException {
@@ -110,23 +111,21 @@ public class BillApplicationService {
 
         if (billToPay != null) {
             billToPay.pay(amount);
-        } else {
-            clientBills.get(clientBills.size()).pay(amount);
+        } else if (clientBills.size() > 0) {
+            clientBills.get(clientBills.size() - 1).pay(amount);
         }
     }
 
     public PaymentToReturnDto createPayment(PaymentDto paymentDto) throws ClientNotFoundException {
         Payment payment = paymentAssembler.createPaymentFromDto(paymentDto);
 
-        //Erreur de billItem ajout d'un build vide pour enlever l'erreur
         payOldestBill(payment.getClientId(), payment.getAmount());
 
         PaymentToReturnDto paymentToReturnDto = paymentAssembler.toDto(payment);
 
         clientRepository.getClient(payment.getClientId());
 
-        //Erreur sur le payment
-        paymentRepository.insert(payment);
+        billRepository.insertPayment(payment);
 
         return paymentToReturnDto;
     }

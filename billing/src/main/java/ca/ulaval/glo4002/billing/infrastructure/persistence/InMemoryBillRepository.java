@@ -1,8 +1,6 @@
 package ca.ulaval.glo4002.billing.infrastructure.persistence;
 
-import ca.ulaval.glo4002.billing.domain.Bill;
-import ca.ulaval.glo4002.billing.domain.BillId;
-import ca.ulaval.glo4002.billing.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.*;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 
 import java.util.*;
@@ -10,10 +8,16 @@ import java.util.*;
 //TODO: faire des tests unitaire
 public class InMemoryBillRepository implements BillRepository {
     private static final Map<BillId, Bill> BILLS = new HashMap<>();
+    private static final Map<PaymentId, Payment> PAYMENTS = new HashMap<>();
 
     @Override
     public void insert(Bill bill) {
         BILLS.put(bill.getId(), bill);
+    }
+
+    @Override
+    public void insertPayment(Payment payment) {
+        PAYMENTS.put(payment.getPaymentId(), payment);
     }
 
     @Override

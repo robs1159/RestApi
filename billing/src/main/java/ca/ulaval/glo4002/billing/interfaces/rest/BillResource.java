@@ -2,10 +2,7 @@ package ca.ulaval.glo4002.billing.interfaces.rest;
 
 import ca.ulaval.glo4002.billing.application.BillApplicationService;
 import ca.ulaval.glo4002.billing.application.BillApplicationServiceFactory;
-import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
-import ca.ulaval.glo4002.billing.application.dto.BillDto;
-import ca.ulaval.glo4002.billing.application.dto.PaymentDto;
-import ca.ulaval.glo4002.billing.application.dto.PaymentToReturnDto;
+import ca.ulaval.glo4002.billing.application.dto.*;
 import ca.ulaval.glo4002.billing.application.repositories.BillItemAsANegativeValueException;
 import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
 import ca.ulaval.glo4002.billing.domain.BillId;
@@ -59,9 +56,9 @@ public class BillResource {
     public Response deleteQuote(@PathParam("id") Long billId) throws BillNotFoundException, BillAlreadyAcceptedException {
         BillId billIdToDelete = new BillId(billId);
 
-        billService.deleteQuote(billIdToDelete);
+        BillDto billDto = billService.deleteQuote(billIdToDelete);
 
-        return Response.status(202).build();
+        return Response.status(202).entity(new ClientDto()).build();
     }
 
     @Path("payments")

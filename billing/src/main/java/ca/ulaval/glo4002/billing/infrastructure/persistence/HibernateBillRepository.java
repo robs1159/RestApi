@@ -3,6 +3,7 @@ package ca.ulaval.glo4002.billing.infrastructure.persistence;
 import ca.ulaval.glo4002.billing.domain.Bill;
 import ca.ulaval.glo4002.billing.domain.BillId;
 import ca.ulaval.glo4002.billing.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.Payment;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 
 import javax.persistence.EntityManager;
@@ -21,6 +22,13 @@ public class HibernateBillRepository implements BillRepository {
     public void insert(Bill bill) {
         entityManager.getTransaction().begin();
         entityManager.persist(bill);
+        entityManager.getTransaction().commit();
+    }
+
+    @Override
+    public void insertPayment(Payment payment) {
+        entityManager.getTransaction().begin();
+        entityManager.persist(payment);
         entityManager.getTransaction().commit();
     }
 
