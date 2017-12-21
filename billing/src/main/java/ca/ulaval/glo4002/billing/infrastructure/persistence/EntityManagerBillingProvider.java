@@ -2,7 +2,7 @@ package ca.ulaval.glo4002.billing.infrastructure.persistence;
 
 import javax.persistence.EntityManager;
 
-public class EntityManagerProvider {
+public class EntityManagerBillingProvider {
 
     private static ThreadLocal<EntityManager> localEntityManager = new ThreadLocal<>();
 

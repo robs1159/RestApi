@@ -15,7 +15,7 @@ public class HibernateBillRepository implements BillRepository {
     private final EntityManager entityManager;
 
     public HibernateBillRepository() {
-        this.entityManager = new EntityManagerProvider().getEntityManager();
+        this.entityManager = new EntityManagerBillingProvider().getEntityManager();
     }
 
     @Override

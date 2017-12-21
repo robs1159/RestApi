@@ -44,7 +44,6 @@ public class BillResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response acceptQuote(@PathParam("id") Long billId) throws BillNotFoundException, BillAlreadyAcceptedException {
         BillId billIdToAccept = new BillId(billId);
-
         AcceptedBillToReturnDto acceptedBill = billService.acceptQuote(billIdToAccept);
 
         return Response.status(200).entity(acceptedBill).build();

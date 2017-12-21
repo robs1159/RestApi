@@ -62,7 +62,7 @@ public class BillTest {
         Bill bill = new BillBuilder().withValidValues().build();
         bill.acceptQuote(ACCEPTED_DATE);
 
-        assertEquals(bill.getEffectiveDate(), ACCEPTED_DATE);
+        assertEquals(bill.getEffectiveDate().toLocalDateTime(), ACCEPTED_DATE);
     }
 
     @Test(expected = BillAlreadyAcceptedException.class)

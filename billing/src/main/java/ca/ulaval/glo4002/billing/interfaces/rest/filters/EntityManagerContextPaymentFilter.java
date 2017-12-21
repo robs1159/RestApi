@@ -1,20 +1,20 @@
 package ca.ulaval.glo4002.billing.interfaces.rest.filters;
 
-import ca.ulaval.glo4002.billing.infrastructure.persistence.EntityManagerFactoryProvider;
-import ca.ulaval.glo4002.billing.infrastructure.persistence.EntityManagerProvider;
+import ca.ulaval.glo4002.billing.infrastructure.persistence.EntityManagerFactoryPaymentProvider;
+import ca.ulaval.glo4002.billing.infrastructure.persistence.EntityManagerPaymentProvider;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.*;
 import java.io.IOException;
 
-public class EntityManagerContextFilter implements Filter {
+public class EntityManagerContextPaymentFilter implements Filter {
 
     private EntityManagerFactory entityManagerFactory;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        entityManagerFactory = EntityManagerFactoryProvider.getFactory();
+        entityManagerFactory = EntityManagerFactoryPaymentProvider.getFactory();
     }
 
     @Override
@@ -24,13 +24,13 @@ public class EntityManagerContextFilter implements Filter {
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
-            EntityManagerProvider.setEntityManager(entityManager);
+            EntityManagerPaymentProvider.setEntityManager(entityManager);
             chain.doFilter(request, response);
         } finally {
             if (entityManager != null) {
                 entityManager.close();
             }
-            EntityManagerProvider.clearEntityManager();
+            EntityManagerPaymentProvider.clearEntityManager();
         }
     }
 

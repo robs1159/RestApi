@@ -11,14 +11,11 @@ public class BillAssembler {
 
     public BillDto toDto(Bill bill) {
         BillDto billDto = new BillDto();
-        BillId billId = bill.getId();
 
-        billDto.id = billId.getId();
+        billDto.id = bill.getId().getId();
         billDto.total = bill.calculateTotal();
         billDto.dueTerm = bill.getDueTerm();
-        billDto.url = this.buildBillURI(billId);
-        billDto.clientId = bill.getClientId();
-        billDto.creationDate = bill.getCreationDate();
+        billDto.url = this.buildBillURI(bill.getId());
 
         return billDto;
     }
@@ -29,13 +26,12 @@ public class BillAssembler {
 
     public AcceptedBillToReturnDto toAcceptedDto(Bill bill) {
         AcceptedBillToReturnDto acceptedBillToReturnDto = new AcceptedBillToReturnDto();
-        BillId billId = bill.getId();
 
-        acceptedBillToReturnDto.id = billId.getId();
+        acceptedBillToReturnDto.id = bill.getId().getId();
         acceptedBillToReturnDto.dueTerm = bill.getDueTerm();
-        acceptedBillToReturnDto.url = this.buildBillURI(billId);
-        acceptedBillToReturnDto.effectiveDate = bill.getEffectiveDate();
-        acceptedBillToReturnDto.expectedPayment = bill.getExpectedPayment();
+        acceptedBillToReturnDto.url = this.buildBillURI(bill.getId());
+        acceptedBillToReturnDto.expectedPayment = bill.getExpectedPayment().toInstant();
+        acceptedBillToReturnDto.effectiveDate = bill.getEffectiveDate().toInstant();
 
         return acceptedBillToReturnDto;
     }

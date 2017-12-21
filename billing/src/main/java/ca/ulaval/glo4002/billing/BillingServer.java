@@ -5,7 +5,7 @@ import ca.ulaval.glo4002.billing.interfaces.rest.exception_mapper.BillNotFoundEx
 import ca.ulaval.glo4002.billing.interfaces.rest.exception_mapper.ClientNotFoundExceptionMapper;
 import ca.ulaval.glo4002.billing.interfaces.rest.exception_mapper.ProductNotFoundExceptionMapper;
 import ca.ulaval.glo4002.billing.interfaces.rest.filters.CharsetResponseFilter;
-import ca.ulaval.glo4002.billing.interfaces.rest.filters.EntityManagerContextFilter;
+import ca.ulaval.glo4002.billing.interfaces.rest.filters.EntityManagerContextBillingFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -39,7 +39,7 @@ public class BillingServer implements Runnable {
         ServletContainer container = new ServletContainer(packageConfig);
         ServletHolder servletHolder = new ServletHolder(container);
 
-        contextHandler.addFilter(EntityManagerContextFilter.class, PATH_SPEC, EnumSet.of(DispatcherType.REQUEST));
+        contextHandler.addFilter(EntityManagerContextBillingFilter.class, PATH_SPEC, EnumSet.of(DispatcherType.REQUEST));
         contextHandler.addServlet(servletHolder, PATH_SPEC);
     }
 

@@ -143,12 +143,12 @@ public class Bill {
         return this.amountPaid.compareTo(calculateTotal()) >= 0;
     }
 
-    public LocalDateTime getEffectiveDate() {
-        return this.effectiveDate.toLocalDateTime();
+    public ZonedDateTime getEffectiveDate() {
+        return this.effectiveDate;
     }
 
-    public LocalDateTime getExpectedPayment() {
-        return this.expectedPayment.toLocalDateTime();
+    public ZonedDateTime getExpectedPayment() {
+        return this.expectedPayment;
     }
 
     public void deleteQuote() {

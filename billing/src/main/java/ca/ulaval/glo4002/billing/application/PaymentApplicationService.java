@@ -16,7 +16,6 @@ public class PaymentApplicationService {
     private PaymentAssembler paymentAssembler;
     private ClientRepository clientRepository;
 
-
     @Inject
     public PaymentApplicationService(PaymentRepository paymentRepository, ClientRepository clientRepository, PaymentAssembler paymentAssembler) {
         this.paymentRepository = paymentRepository;
@@ -24,17 +23,16 @@ public class PaymentApplicationService {
         this.paymentAssembler = paymentAssembler;
     }
 
-    public Payment createPayment(PaymentDto paymentDto) throws ClientNotFoundException {
+    public PaymentToReturnDto createPayment(PaymentDto paymentDto) throws ClientNotFoundException {
         Payment payment = paymentAssembler.createPaymentFromDto(paymentDto);
+
+        payBills(payment);
+        PaymentToReturnDto paymentToReturnDto = paymentAssembler.toDto(payment);
 
         this.clientRepository.getClient(payment.getClientId());
         this.paymentRepository.insert(payment);
 
-        return payment;
-    }
-
-    public PaymentToReturnDto toReturnDto(Payment payment) {
-        return paymentAssembler.toDto(payment);
+        return paymentToReturnDto;
     }
 
     public void payBills(Payment payment) {

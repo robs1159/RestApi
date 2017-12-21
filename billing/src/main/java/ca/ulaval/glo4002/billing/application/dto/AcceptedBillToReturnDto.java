@@ -3,7 +3,7 @@ package ca.ulaval.glo4002.billing.application.dto;
 import ca.ulaval.glo4002.billing.domain.DueTerm;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class AcceptedBillToReturnDto {
 
@@ -11,10 +11,10 @@ public class AcceptedBillToReturnDto {
     public Long id;
 
     @JsonProperty
-    public LocalDateTime effectiveDate;
+    public Instant effectiveDate;
 
     @JsonProperty
-    public LocalDateTime expectedPayment;
+    public Instant expectedPayment;
 
     @JsonProperty
     public DueTerm dueTerm;
