@@ -1,19 +1,20 @@
 package ca.ulaval.glo4002.billing.application;
 
 import ca.ulaval.glo4002.billing.application.assembler.BillAssembler;
-import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
-import ca.ulaval.glo4002.billing.application.dto.BillDto;
-import ca.ulaval.glo4002.billing.application.dto.BillItemDto;
+import ca.ulaval.glo4002.billing.application.assembler.PaymentAssembler;
+import ca.ulaval.glo4002.billing.application.dto.*;
 import ca.ulaval.glo4002.billing.application.repositories.BillItemAsANegativeValueException;
 import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
 import ca.ulaval.glo4002.billing.domain.Bill;
 import ca.ulaval.glo4002.billing.domain.BillId;
 import ca.ulaval.glo4002.billing.domain.ClientId;
+import ca.ulaval.glo4002.billing.domain.Payment;
 import ca.ulaval.glo4002.billing.domain.exceptions.BillAlreadyAcceptedException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ClientRepository;
+import ca.ulaval.glo4002.billing.domain.repositories.PaymentRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 
 import javax.inject.Inject;
@@ -28,13 +29,17 @@ public class BillApplicationService {
     private BillRepository billRepository;
     private ClientRepository clientRepository;
     private ProductRepository productRepository;
+    private PaymentRepository paymentRepository;
+    private PaymentAssembler paymentAssembler;
 
     @Inject
-    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, ClientRepository clientRepository, ProductRepository productRepository) {
+    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, ClientRepository clientRepository, ProductRepository productRepository, PaymentRepository paymentRepository, PaymentAssembler paymentAssembler) {
         this.billAssembler = billAssembler;
         this.billRepository = billRepository;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
+        this.paymentRepository = paymentRepository;
+        this.paymentAssembler = paymentAssembler;
     }
 
     public BillDto createBill(BillDto billDto) throws ClientNotFoundException, ProductNotFoundException, BillItemAsANegativeValueException {
@@ -108,5 +113,21 @@ public class BillApplicationService {
         } else {
             clientBills.get(clientBills.size()).pay(amount);
         }
+    }
+
+    public PaymentToReturnDto createPayment(PaymentDto paymentDto) throws ClientNotFoundException {
+        Payment payment = paymentAssembler.createPaymentFromDto(paymentDto);
+
+        //Erreur de billItem ajout d'un build vide pour enlever l'erreur
+        payOldestBill(payment.getClientId(), payment.getAmount());
+
+        PaymentToReturnDto paymentToReturnDto = paymentAssembler.toDto(payment);
+
+        clientRepository.getClient(payment.getClientId());
+
+        //Erreur sur le payment
+        paymentRepository.insert(payment);
+
+        return paymentToReturnDto;
     }
 }

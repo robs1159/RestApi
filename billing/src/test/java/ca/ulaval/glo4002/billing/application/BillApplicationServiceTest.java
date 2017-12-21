@@ -1,6 +1,7 @@
 package ca.ulaval.glo4002.billing.application;
 
 import ca.ulaval.glo4002.billing.application.assembler.BillAssembler;
+import ca.ulaval.glo4002.billing.application.assembler.PaymentAssembler;
 import ca.ulaval.glo4002.billing.application.dto.BillDto;
 import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
 import ca.ulaval.glo4002.billing.builders.BillBuilder;
@@ -10,6 +11,7 @@ import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ClientRepository;
+import ca.ulaval.glo4002.billing.domain.repositories.PaymentRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 import ca.ulaval.glo4002.billing.infrastructure.persistence.InMemoryBillRepository;
 import org.junit.Before;
@@ -34,6 +36,8 @@ public class BillApplicationServiceTest {
     private BillDto invalidBillDTO;
     private BillApplicationService billApplicationService;
     private ClientRepository clientRepository;
+    private PaymentAssembler paymentAssembler;
+    private PaymentRepository paymentRepository;
     private ProductRepository productRepository;
     private BillId billId;
     private BillRepository billRepository;
@@ -48,9 +52,11 @@ public class BillApplicationServiceTest {
         billRepository = mock(InMemoryBillRepository.class);
         clientRepository = mock(ClientRepository.class);
         productRepository = mock(ProductRepository.class);
+        paymentAssembler = mock(PaymentAssembler.class);
+        paymentRepository = mock(PaymentRepository.class);
         client = mock(Client.class);
 
-        billApplicationService = new BillApplicationService(billAssembler, billRepository, clientRepository, productRepository);
+        billApplicationService = new BillApplicationService(billAssembler, billRepository, clientRepository, productRepository, paymentRepository, paymentAssembler);
         validDueTerm = DueTerm.DAYS30;
         invalidBillDTO = new BillDtoBuilder().withValidValues().build();
         validBillDTO = new BillDtoBuilder().withValidValues().build();

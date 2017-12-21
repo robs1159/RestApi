@@ -4,6 +4,8 @@ import ca.ulaval.glo4002.billing.application.BillApplicationService;
 import ca.ulaval.glo4002.billing.application.BillApplicationServiceFactory;
 import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
 import ca.ulaval.glo4002.billing.application.dto.BillDto;
+import ca.ulaval.glo4002.billing.application.dto.PaymentDto;
+import ca.ulaval.glo4002.billing.application.dto.PaymentToReturnDto;
 import ca.ulaval.glo4002.billing.application.repositories.BillItemAsANegativeValueException;
 import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
 import ca.ulaval.glo4002.billing.domain.BillId;
@@ -17,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-@Path("/bills")
+@Path("/")
 public class BillResource {
 
     //TODO:Ajout de test unitaire sur la ressource
@@ -30,6 +32,7 @@ public class BillResource {
         this.billService = (new BillApplicationServiceFactory()).getBillApplicationService();
     }
 
+    @Path("bills")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,7 +41,7 @@ public class BillResource {
         return Response.created(uriInfo.getAbsolutePath()).entity(createdBill).build();
     }
 
-    @Path("/{id}")
+    @Path("bills/{id}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -49,7 +52,7 @@ public class BillResource {
         return Response.status(200).entity(acceptedBill).build();
     }
 
-    @Path("/{id}")
+    @Path("bills/{id}")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -59,5 +62,14 @@ public class BillResource {
         billService.deleteQuote(billIdToDelete);
 
         return Response.status(202).build();
+    }
+
+    @Path("payments")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createPaymentPost(PaymentDto paymentDto) throws ClientNotFoundException {
+        PaymentToReturnDto paymentToReturnDto = billService.createPayment(paymentDto);
+        return Response.created(uriInfo.getAbsolutePath()).entity(paymentToReturnDto).build();
     }
 }

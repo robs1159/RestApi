@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class HibernateBillRepository implements BillRepository {
-
     private final EntityManager entityManager;
 
     public HibernateBillRepository() {

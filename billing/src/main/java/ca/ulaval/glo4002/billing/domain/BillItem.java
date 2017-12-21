@@ -24,6 +24,9 @@ public class BillItem {
     @Column
     private int quantity;
 
+    public BillItem() {
+    }
+
     public BillItem(BigDecimal price, String note, ProductId productId, int quantity) {
         this.price = price;
         this.note = note;
