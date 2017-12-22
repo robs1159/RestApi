@@ -3,6 +3,7 @@ package ca.ulaval.glo4002.billing.infrastructure.persistence;
 import ca.ulaval.glo4002.billing.domain.*;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 //TODO: faire des tests unitaire
@@ -44,6 +45,36 @@ public class InMemoryBillRepository implements BillRepository {
         }
 
         clientBills.sort(Collections.reverseOrder(Comparator.comparing(Bill::getExpectedPayment)));
+
+        return clientBills;
+    }
+
+    @Override
+    public List<Payment> findPaymentsByDate(ZonedDateTime startDate, ZonedDateTime endDate) {
+        List<Payment> inDatePayment = new ArrayList<>();
+
+        for (Map.Entry<PaymentId, Payment> paymentEntry : PAYMENTS.entrySet()) {
+            Payment payment = paymentEntry.getValue();
+
+            if (payment.getDate().isBefore(endDate) && payment.getDate().isAfter(startDate)) {
+                inDatePayment.add(payment);
+            }
+        }
+
+        return inDatePayment;
+    }
+
+    @Override
+    public List<Bill> findBillsByExpectedPayment(ZonedDateTime startDate, ZonedDateTime endDate) {
+        List<Bill> clientBills = new ArrayList<>();
+
+        for (Map.Entry<BillId, Bill> billEntry : BILLS.entrySet()) {
+            Bill bill = billEntry.getValue();
+
+            if (bill.getEffectiveDate().isBefore(endDate) && bill.getEffectiveDate().isAfter(startDate) && bill.getEffectiveDate() != null) {
+                clientBills.add(bill);
+            }
+        }
 
         return clientBills;
     }

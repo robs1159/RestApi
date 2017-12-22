@@ -46,7 +46,6 @@ public class BillItemBuilder {
         return this;
     }
 
-    //TODO:Devrait être mocker
     public BillItem build() {
         return new BillItem(price, note, productId, quantity);
     }

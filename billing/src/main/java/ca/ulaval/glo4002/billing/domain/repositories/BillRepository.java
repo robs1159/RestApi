@@ -5,6 +5,7 @@ import ca.ulaval.glo4002.billing.domain.BillId;
 import ca.ulaval.glo4002.billing.domain.ClientId;
 import ca.ulaval.glo4002.billing.domain.Payment;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,8 @@ public interface BillRepository {
     Optional<Bill> findBillById(BillId billId);
 
     List<Bill> findBillsByClientIdOrderedByOldestExpectedPayment(ClientId clientId);
+
+    List<Payment> findPaymentsByDate(ZonedDateTime startDate, ZonedDateTime endDate);
+
+    List<Bill> findBillsByExpectedPayment(ZonedDateTime startDate, ZonedDateTime endDate);
 }

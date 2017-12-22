@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public class BillTest {
 
-    private static final LocalDateTime ACCEPTED_DATE = LocalDateTime.now();
+    private static final ZonedDateTime ACCEPTED_DATE = ZonedDateTime.now();
     private static final BigDecimal AMOUNT_PAID_TO_ADD = new BigDecimal(50);
     private static final int AMOUNT_TO_PAY_DIVIDE = 2;
 
@@ -62,13 +62,13 @@ public class BillTest {
         Bill bill = new BillBuilder().withValidValues().build();
         bill.acceptQuote(ACCEPTED_DATE);
 
-        assertEquals(bill.getEffectiveDate().toLocalDateTime(), ACCEPTED_DATE);
+        assertEquals(bill.getEffectiveDate(), ACCEPTED_DATE);
     }
 
     @Test(expected = BillAlreadyAcceptedException.class)
     public void givenValidQuoteAndQuoteIsAlreadyAccepted_whenAcceptedASecondTime_thenShouldThrowAnException() {
         Bill bill = new BillBuilder().withValidValues().build();
-        LocalDateTime newAcceptedDateTenDaysLater = ACCEPTED_DATE.plusDays(10);
+        ZonedDateTime newAcceptedDateTenDaysLater = ACCEPTED_DATE.plusDays(10);
         bill.acceptQuote(ACCEPTED_DATE);
 
         bill.acceptQuote(newAcceptedDateTenDaysLater);
@@ -115,7 +115,7 @@ public class BillTest {
     @Test(expected = BillAlreadyAcceptedException.class)
     public void givenClientAcceptBill_whenAcceptQuote_thenErrorIsThrown() throws BillAlreadyAcceptedException {
         Bill bill = new BillBuilder().withValidValues().build();
-        bill.acceptQuote(LocalDateTime.now());
-        bill.acceptQuote(LocalDateTime.now());
+        bill.acceptQuote(ZonedDateTime.now());
+        bill.acceptQuote(ZonedDateTime.now());
     }
 }

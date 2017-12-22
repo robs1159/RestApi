@@ -5,21 +5,19 @@ import ca.ulaval.glo4002.billing.application.assembler.PaymentAssembler;
 import ca.ulaval.glo4002.billing.application.dto.*;
 import ca.ulaval.glo4002.billing.application.repositories.BillItemAsANegativeValueException;
 import ca.ulaval.glo4002.billing.application.repositories.BillNotFoundException;
-import ca.ulaval.glo4002.billing.domain.Bill;
-import ca.ulaval.glo4002.billing.domain.BillId;
-import ca.ulaval.glo4002.billing.domain.ClientId;
-import ca.ulaval.glo4002.billing.domain.Payment;
+import ca.ulaval.glo4002.billing.domain.*;
 import ca.ulaval.glo4002.billing.domain.exceptions.BillAlreadyAcceptedException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ClientRepository;
-import ca.ulaval.glo4002.billing.domain.repositories.PaymentRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,16 +27,14 @@ public class BillApplicationService {
     private BillRepository billRepository;
     private ClientRepository clientRepository;
     private ProductRepository productRepository;
-    private PaymentRepository paymentRepository;
     private PaymentAssembler paymentAssembler;
 
     @Inject
-    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, ClientRepository clientRepository, ProductRepository productRepository, PaymentRepository paymentRepository, PaymentAssembler paymentAssembler) {
+    public BillApplicationService(BillAssembler billAssembler, BillRepository billRepository, ClientRepository clientRepository, ProductRepository productRepository, PaymentAssembler paymentAssembler) {
         this.billAssembler = billAssembler;
         this.billRepository = billRepository;
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
-        this.paymentRepository = paymentRepository;
         this.paymentAssembler = paymentAssembler;
     }
 
@@ -68,7 +64,7 @@ public class BillApplicationService {
         Optional<Bill> bill = billRepository.findBillById(billId);
 
         if (bill.isPresent()) {
-            bill.get().acceptQuote(LocalDateTime.now());
+            bill.get().acceptQuote(ZonedDateTime.now());
             billRepository.update(bill.get());
         } else {
             throw new BillNotFoundException(billId);
@@ -128,5 +124,57 @@ public class BillApplicationService {
         billRepository.insertPayment(payment);
 
         return paymentToReturnDto;
+    }
+
+    public List<LedgerDto> filterLedger(Long startMonth, Long endMonth, Long year) throws BillNotFoundException {
+        List<LedgerDto> ledgersDto = new ArrayList<>();
+
+        List<Ledger> ledgers = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            ZonedDateTime endDate = buildEndingDate(endMonth, year);
+            ZonedDateTime startDate = buildStartingDate(startMonth, year);
+
+            List<Bill> inDateBills = billRepository.findBillsByExpectedPayment(startDate, endDate);
+
+            if (inDateBills.size() == 0) {
+                throw new BillNotFoundException(null);
+            }
+
+            List<Payment> inDatePayment = billRepository.findPaymentsByDate(startDate, endDate);
+
+            List<Entrie> entriesFromBills = billAssembler.createEntriesFromBills(inDateBills);
+
+            Ledger ledger = new Ledger(i, entriesFromBills);
+
+            List<Entrie> entriesFromPayments = paymentAssembler.createEntriesFromPayments(inDatePayment);
+
+            ledger.addEntries(entriesFromPayments);
+
+            ledger.setBalanceOnEntries();
+
+            ledgers.add(ledger);
+        }
+        ledgersDto.addAll(billAssembler.toLedgerDto(ledgers));
+
+        return ledgersDto;
+    }
+
+    private ZonedDateTime buildStartingDate(Long startMonth, Long year) {
+        if (startMonth == 0 || startMonth == null) {
+            return ZonedDateTime.of(year.intValue(), 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        } else {
+            return ZonedDateTime.of(year.intValue(), startMonth.intValue(), 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        }
+    }
+
+    private ZonedDateTime buildEndingDate(Long endMonth, Long year) {
+        ZonedDateTime zonedDateTime;
+        if (endMonth == 0 || endMonth == null) {
+            zonedDateTime = ZonedDateTime.of(year.intValue(), 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+
+        } else {
+            zonedDateTime = ZonedDateTime.of(year.intValue(), endMonth.intValue(), 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        }
+        return zonedDateTime.plusMonths(1).minusDays(1);
     }
 }

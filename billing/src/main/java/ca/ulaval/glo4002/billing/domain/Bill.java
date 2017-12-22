@@ -4,8 +4,6 @@ import ca.ulaval.glo4002.billing.domain.exceptions.BillAlreadyAcceptedException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +90,13 @@ public class Bill {
         return total;
     }
 
-    public void acceptQuote(LocalDateTime acceptedQuoteDate) throws BillAlreadyAcceptedException {
+    public BigDecimal calculateBalance() {
+        return calculateBalance().subtract(getAmountPaid());
+    }
+
+    public void acceptQuote(ZonedDateTime acceptedQuoteDate) throws BillAlreadyAcceptedException {
         if (effectiveDate == null) {
-            effectiveDate = acceptedQuoteDate.atZone(ZoneId.of("UTC"));
+            effectiveDate = acceptedQuoteDate;
             expectedPayment = effectiveDate.plusDays(dueTerm.inDays());
         } else {
             throw new BillAlreadyAcceptedException(this.billId);

@@ -2,8 +2,10 @@ package ca.ulaval.glo4002.billing.application.assembler;
 
 import ca.ulaval.glo4002.billing.application.dto.PaymentDto;
 import ca.ulaval.glo4002.billing.application.dto.PaymentToReturnDto;
-import ca.ulaval.glo4002.billing.domain.Payment;
-import ca.ulaval.glo4002.billing.domain.PaymentId;
+import ca.ulaval.glo4002.billing.domain.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PaymentAssembler {
 
@@ -25,5 +27,18 @@ public class PaymentAssembler {
 
     public String buildPaymentURI(PaymentId PaymentId) {
         return PAYMENTS_URI + PaymentId.getUniqueId();
+    }
+
+    public List<Entrie> createEntriesFromPayments(List<Payment> payments) {
+        List<Entrie> entries = new ArrayList<>();
+        for (Payment payment : payments) {
+            Entrie entrie = new Entrie(payment.getDate().toInstant(),
+                    TransactionType.PAYMENT,
+                    payment.getClientId(),
+                    OperationType.DEBIT,
+                    payment.getAmount().floatValue());
+            entries.add(entrie);
+        }
+        return entries;
     }
 }

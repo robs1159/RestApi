@@ -13,12 +13,8 @@ import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class CrmApplicationServiceTest {
 
@@ -40,7 +36,6 @@ public class CrmApplicationServiceTest {
         VALID_CLIENT = new Client(new ClientId(), DueTerm.DAYS30);
     }
 
-
     @Test(expected = ClientNotFoundException.class)
     public void givenInvalidClientId_whenFindClientById_thenThrowExeption() throws ClientNotFoundException {
         willThrow(new ClientNotFoundException(INVALID_CLIENT_ID)).given(clientRepository).getClient(INVALID_CLIENT_ID);
@@ -48,38 +43,10 @@ public class CrmApplicationServiceTest {
         clientRepository.getClient(INVALID_CLIENT_ID);
     }
 
-    @Test
-    public void givenValidClientId_whenFindClientById_thenReturnClientId() throws ClientNotFoundException {
-        clientRepository.getClient(VALID_CLIENT_ID);
-        verify(clientRepository).getClient(VALID_CLIENT_ID);
-    }
-
-
     @Test(expected = ProductNotFoundException.class)
     public void givenInvalidProductID_whenFindProductById_thenThrowExeption() throws ProductNotFoundException {
         willThrow(new ProductNotFoundException(INVALID_PRODUCT_ID)).given(productRepository).exist(INVALID_PRODUCT_ID);
 
         productRepository.exist(INVALID_PRODUCT_ID);
-    }
-
-    @Test
-    public void givenValidProductId_whenFindProductIdById_thenReturnProductId() throws ProductNotFoundException {
-        productRepository.exist(VALID_PRODUCT_ID);
-        verify(productRepository).exist(VALID_PRODUCT_ID);
-    }
-
-    @Test
-    public void givenValidClientId_whenGetDefaultTerm_ThenReturnGoodDueTerm() throws ClientNotFoundException {
-        willReturn(DueTerm.DAYS90).given(clientRepository).getDefaultDueTerm(VALID_CLIENT_ID);
-
-        assertSame(DueTerm.DAYS90, clientRepository.getDefaultDueTerm(VALID_CLIENT_ID));
-    }
-
-    @Test
-    public void givenValidClientId_whenValidateIfClientExist_ThenReturnFalse() throws ClientNotFoundException {
-        willReturn(VALID_CLIENT).given(clientRepository).getClient(VALID_CLIENT_ID);
-
-        assertTrue(clientRepository.getClient(VALID_CLIENT_ID) != null);
-        verify(clientRepository).getClient(VALID_CLIENT_ID);
     }
 }

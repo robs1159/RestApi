@@ -2,6 +2,7 @@ package ca.ulaval.glo4002.billing.domain;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 @Entity
 public class Payment {
@@ -21,15 +22,22 @@ public class Payment {
     @Column
     private BigDecimal amount;
 
+    @Column
+    private ZonedDateTime date;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "paymentMethod")
     private PaymentMethod paymentMethod;
+
+    public Payment() {
+    }
 
     public Payment(ClientId clientId, float amount, PaymentMethod paymentMethod) {
         this.paymentId = createPaymentId();
         this.clientId = clientId;
         this.amount = new BigDecimal(amount);
         this.paymentMethod = paymentMethod;
+        this.date = ZonedDateTime.now();
     }
 
     private PaymentId createPaymentId() {
@@ -46,6 +54,10 @@ public class Payment {
 
     public BigDecimal getAmount() {
         return this.amount;
+    }
+
+    public ZonedDateTime getDate() {
+        return date;
     }
 
     public PaymentMethod getPaymentMethod() {

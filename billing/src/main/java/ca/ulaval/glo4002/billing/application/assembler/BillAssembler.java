@@ -2,8 +2,12 @@ package ca.ulaval.glo4002.billing.application.assembler;
 
 import ca.ulaval.glo4002.billing.application.dto.AcceptedBillToReturnDto;
 import ca.ulaval.glo4002.billing.application.dto.BillDto;
-import ca.ulaval.glo4002.billing.domain.Bill;
-import ca.ulaval.glo4002.billing.domain.BillId;
+import ca.ulaval.glo4002.billing.application.dto.EntrieDto;
+import ca.ulaval.glo4002.billing.application.dto.LedgerDto;
+import ca.ulaval.glo4002.billing.domain.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BillAssembler {
 
@@ -38,5 +42,45 @@ public class BillAssembler {
 
     private String buildBillURI(BillId billId) {
         return BILLS_URI + billId.getId();
+    }
+
+    public List<Entrie> createEntriesFromBills(List<Bill> bills) {
+        List<Entrie> entries = new ArrayList<>();
+        for (Bill bill : bills) {
+            TransactionType transactionType = TransactionType.INVOICE;
+            if (!bill.isActive()) {
+                transactionType = TransactionType.INVOICE_CANCELLED;
+            }
+
+            Entrie entrie = new Entrie(
+                    bill.getEffectiveDate().toInstant(),
+                    transactionType,
+                    bill.getClientId(),
+                    OperationType.CREDIT,
+                    bill.calculateTotal().floatValue());
+            entries.add(entrie);
+        }
+        return entries;
+    }
+
+    public List<LedgerDto> toLedgerDto(List<Ledger> ledgers) {
+        List<LedgerDto> ledgerDtos = new ArrayList<>();
+        for (Ledger ledger : ledgers) {
+            LedgerDto ledgerDto = new LedgerDto();
+            ledgerDto.accountid = ledger.getAccountid();
+            ledgerDto.entries = new ArrayList<>();
+            for (Entrie entrie : ledger.getEntries()) {
+                EntrieDto entrieDto = new EntrieDto();
+                entrieDto.date = entrie.getDate();
+                entrieDto.typeTransaction = entrie.getTypeTransaction();
+                entrieDto.clientId = entrie.getClientId().getClientId();
+                entrieDto.typeOperation = entrie.getTypeOperation();
+                entrieDto.amount = entrie.getAmount();
+                entrieDto.balance = entrie.getBalance();
+                ledgerDto.entries.add(entrieDto);
+            }
+            ledgerDtos.add(ledgerDto);
+        }
+        return ledgerDtos;
     }
 }

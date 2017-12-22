@@ -11,7 +11,6 @@ import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
 import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ClientRepository;
-import ca.ulaval.glo4002.billing.domain.repositories.PaymentRepository;
 import ca.ulaval.glo4002.billing.domain.repositories.ProductRepository;
 import ca.ulaval.glo4002.billing.infrastructure.persistence.InMemoryBillRepository;
 import org.junit.Before;
@@ -37,7 +36,6 @@ public class BillApplicationServiceTest {
     private BillApplicationService billApplicationService;
     private ClientRepository clientRepository;
     private PaymentAssembler paymentAssembler;
-    private PaymentRepository paymentRepository;
     private ProductRepository productRepository;
     private BillId billId;
     private BillRepository billRepository;
@@ -53,10 +51,9 @@ public class BillApplicationServiceTest {
         clientRepository = mock(ClientRepository.class);
         productRepository = mock(ProductRepository.class);
         paymentAssembler = mock(PaymentAssembler.class);
-        paymentRepository = mock(PaymentRepository.class);
         client = mock(Client.class);
 
-        billApplicationService = new BillApplicationService(billAssembler, billRepository, clientRepository, productRepository, paymentRepository, paymentAssembler);
+        billApplicationService = new BillApplicationService(billAssembler, billRepository, clientRepository, productRepository, paymentAssembler);
         validDueTerm = DueTerm.DAYS30;
         invalidBillDTO = new BillDtoBuilder().withValidValues().build();
         validBillDTO = new BillDtoBuilder().withValidValues().build();
@@ -121,4 +118,40 @@ public class BillApplicationServiceTest {
 
         assertTrue(validBill.isPaid());
     }
+
+    /*@Before
+    public void setup() {
+        paymentRepository = mock(PaymentRepository.class);
+        clientRepository = mock(ClientRepository.class);
+        paymentAssembler = mock(PaymentAssembler.class);
+        client = new Client(new ClientId(), DueTerm.DAYS30);
+
+        validPaymentDto = new PaymentDtoBuilder().withValidValues().build();
+        validPayment = new PaymentBuilder().withValidValues().build();
+        validPaymentToReturnDto = new PaymentToReturnDto();
+        validPaymentToReturnDto.id = validPayment.getPaymentId().getUniqueId();
+        validPaymentToReturnDto.url = PAYMENTS_URI + validPayment.getPaymentId().getUniqueId();
+        willReturn(validPayment).given(paymentAssembler).createPaymentFromDto(validPaymentDto);
+    }
+
+    @Test
+    public void givenPaymentNotExistAndValidParam_whenCreatePayment_thenShouldCreateValidPayment() throws ClientNotFoundException {
+        Payment payment = billingService.createPayment(validPaymentDto);
+
+        Assert.assertEquals(validPaymentDto.clientId.getClientId(), payment.getClientId().getClientId());
+        Assert.assertEquals(validPaymentDto.amount, payment.getAmount().floatValue(), DELTA_FLOAT_TEST);
+        Assert.assertEquals(validPaymentDto.paymentMethod.account, payment.getPaymentMethod().getAccount());
+        Assert.assertEquals(validPaymentDto.paymentMethod.source, payment.getPaymentMethod().getSource());
+    }
+
+    @Test
+    public void givenPaymentWithValidParam_whenPaymentResponseRest_thenPaymentReturnToDto() throws ClientNotFoundException {
+        willReturn(validPaymentToReturnDto).given(paymentAssembler).toDto(validPayment);
+
+        PaymentToReturnDto paymentToReturnDto = paymentService.toReturnDto(validPayment);
+
+        Assert.assertEquals(validPaymentToReturnDto.id, paymentToReturnDto.id);
+        Assert.assertEquals(validPaymentToReturnDto.url, paymentToReturnDto.url);
+    }*/
+
 }
