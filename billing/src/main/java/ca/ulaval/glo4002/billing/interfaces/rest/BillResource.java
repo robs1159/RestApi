@@ -11,6 +11,7 @@ import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 import ca.ulaval.glo4002.billing.domain.exceptions.ProductNotFoundException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -21,7 +22,6 @@ import java.util.List;
 @Path("/")
 public class BillResource {
 
-    //TODO:Ajout de test unitaire sur la ressource
     private BillApplicationService billService;
 
     @Context
@@ -33,7 +33,6 @@ public class BillResource {
 
     @Path("bills")
     @POST
-    @Valid
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createBillingPost(@Valid BillDto billDto) throws ClientNotFoundException, ProductNotFoundException, BillItemAsANegativeValueException {
@@ -48,8 +47,7 @@ public class BillResource {
     public Response acceptQuote(@PathParam("id") Long billId) throws BillNotFoundException, BillAlreadyAcceptedException {
         BillId billIdToAccept = new BillId(billId);
         AcceptedBillToReturnDto acceptedBill = billService.acceptQuote(billIdToAccept);
-
-        return Response.status(200).entity(acceptedBill).build();
+        return Response.ok().entity(acceptedBill).build();
     }
 
     @Path("bills/{id}")
@@ -58,9 +56,7 @@ public class BillResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuote(@PathParam("id") Long billId) throws BillNotFoundException, BillAlreadyAcceptedException {
         BillId billIdToDelete = new BillId(billId);
-
         BillDto billDto = billService.deleteQuote(billIdToDelete);
-
         return Response.accepted().entity(billDto).build();
     }
 
@@ -77,7 +73,7 @@ public class BillResource {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response filterLedger(@QueryParam("startMonth") @DefaultValue("1") Long startMonth, @DefaultValue("12") @QueryParam("endMonth") Long endMonth, @QueryParam("year") Long year) throws ClientNotFoundException, BillNotFoundException {
+    public Response filterLedger(@QueryParam("startMonth") @DefaultValue("1") Long startMonth, @DefaultValue("12") @QueryParam("endMonth") Long endMonth, @NotNull @QueryParam("year") Long year) {
         List<LedgerDto> ledgersDto = billService.filterLedger(startMonth, endMonth, year);
         return Response.ok().entity(ledgersDto).build();
     }

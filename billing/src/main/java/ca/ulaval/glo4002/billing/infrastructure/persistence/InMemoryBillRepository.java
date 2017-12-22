@@ -6,7 +6,6 @@ import ca.ulaval.glo4002.billing.domain.repositories.BillRepository;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-//TODO: faire des tests unitaire
 public class InMemoryBillRepository implements BillRepository {
     private static final Map<BillId, Bill> BILLS = new HashMap<>();
     private static final Map<PaymentId, Payment> PAYMENTS = new HashMap<>();

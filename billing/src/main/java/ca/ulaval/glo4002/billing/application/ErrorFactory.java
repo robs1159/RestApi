@@ -16,11 +16,4 @@ public class ErrorFactory {
 
         return errorDto;
     }
-
-    public static ErrorDto createErrorDtoFromList(List<ErrorItemDto> errorItemList) {
-        ErrorDto errorDto = new ErrorDto();
-        errorDto.errors = errorItemList;
-
-        return errorDto;
-    }
 }

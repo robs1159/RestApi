@@ -8,7 +8,7 @@ public class ClientId {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int dbId;
-    //TODO: 2 id
+
     @Column
     private long clientId;
 

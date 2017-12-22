@@ -9,6 +9,7 @@
         <module name="application" />
         <module name="billing" />
         <module name="crm" />
+        <module name="UAT" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -18,6 +19,7 @@
       <module name="crmInterface" target="1.8" />
       <module name="payment" target="1.8" />
       <module name="projet2017" target="1.5" />
+      <module name="UAT" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

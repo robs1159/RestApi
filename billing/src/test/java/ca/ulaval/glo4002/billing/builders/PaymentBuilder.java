@@ -21,7 +21,6 @@ public class PaymentBuilder {
         return this;
     }
 
-    //TODO:Devrait être mocker
     public Payment build() {
         return new Payment(this.clientId, this.amount, this.paymentMethod);
     }

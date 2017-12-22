@@ -28,8 +28,7 @@ public class BillDto {
     public DueTerm dueTerm;
 
     @JsonProperty
-    @Valid
-    public List<BillItemDto> items;
+    public List<@Valid BillItemDto> items;
 
     @JsonProperty
     public String url;

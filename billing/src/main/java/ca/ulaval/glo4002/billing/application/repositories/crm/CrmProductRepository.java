@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 
 public class CrmProductRepository implements ProductRepository {
 
-    private static final String PRODUCTS_URL = "http://localhost:8080/products/";
-
     private HttpRequester httpRequester = new HttpRequester();
 
     public CrmProductRepository() {

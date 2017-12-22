@@ -36,14 +36,6 @@ public class Ledger {
         return entries;
     }
 
-    public float getBalanceFromInvoice() {
-        float balance = 0;
-        for (Entrie entrie : entries) {
-            balance += entrie.getAmount();
-        }
-        return balance;
-    }
-
     public void setBalanceOnEntries() {
         entries.sort(Comparator.comparing(Entrie::getDate));
         float balance = 0;

@@ -10,7 +10,6 @@ public class BillItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int dbId;
 
-    //ToDo:2 id
     @OneToOne(cascade = CascadeType.ALL)
     @Embedded
     private ProductId productId;

@@ -67,7 +67,6 @@ public class BillBuilder {
         return this;
     }
 
-    //TODO:Devrait être mocker
     public Bill build() {
         return new Bill(billId, clientId, creationDate, dueTerm, amountPaid, items);
     }

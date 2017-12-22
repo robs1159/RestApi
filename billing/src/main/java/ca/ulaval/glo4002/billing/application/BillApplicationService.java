@@ -126,51 +126,64 @@ public class BillApplicationService {
         return paymentToReturnDto;
     }
 
-    public List<LedgerDto> filterLedger(Long startMonth, Long endMonth, Long year) throws BillNotFoundException {
+    public List<LedgerDto> filterLedger(Long startMonth, Long endMonth, Long year) {
         List<LedgerDto> ledgersDto = new ArrayList<>();
 
+        ZonedDateTime endDate = buildEndingDate(endMonth, year);
+        ZonedDateTime startDate = buildStartingDate(startMonth, year);
+
+        ledgersDto.addAll(getAllLedgerBetweenTwoDate(startDate, endDate));
+
+        return ledgersDto;
+    }
+
+    public List<LedgerDto> getAllLedgerBetweenTwoDate(ZonedDateTime startDate, ZonedDateTime endDate) {
         List<Ledger> ledgers = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
-            ZonedDateTime endDate = buildEndingDate(endMonth, year);
-            ZonedDateTime startDate = buildStartingDate(startMonth, year);
+        for (long i = 0; i < 1; i++) {
+            ledgers.addAll(getAllLedgerForAAccount(i, startDate, endDate));
+        }
+        return billAssembler.toLedgerDto(ledgers);
+    }
 
-            List<Bill> inDateBills = billRepository.findBillsByExpectedPayment(startDate, endDate);
+    public List<Ledger> getAllLedgerForAAccount(long AccountId, ZonedDateTime startDate, ZonedDateTime endDate) {
+        List<Entrie> entries = getAllEntrieBetweenDate(startDate, endDate);
+        List<Ledger> ledgers = new ArrayList<>();
 
-            if (inDateBills.size() == 0) {
-                throw new BillNotFoundException(null);
-            }
-
-            List<Payment> inDatePayment = billRepository.findPaymentsByDate(startDate, endDate);
-
-            List<Entrie> entriesFromBills = billAssembler.createEntriesFromBills(inDateBills);
-
-            Ledger ledger = new Ledger(i, entriesFromBills);
-
-            List<Entrie> entriesFromPayments = paymentAssembler.createEntriesFromPayments(inDatePayment);
-
-            ledger.addEntries(entriesFromPayments);
+        if (entries.size() > 0) {
+            Ledger ledger = new Ledger(AccountId, entries);
 
             ledger.setBalanceOnEntries();
 
             ledgers.add(ledger);
         }
-        ledgersDto.addAll(billAssembler.toLedgerDto(ledgers));
-
-        return ledgersDto;
+        return ledgers;
     }
 
-    private ZonedDateTime buildStartingDate(Long startMonth, Long year) {
-        if (startMonth == 0 || startMonth == null) {
+    public List<Entrie> getAllEntrieBetweenDate(ZonedDateTime startDate, ZonedDateTime endDate) {
+        List<Bill> inDateBills = billRepository.findBillsByExpectedPayment(startDate, endDate);
+
+        List<Payment> inDatePayment = billRepository.findPaymentsByDate(startDate, endDate);
+
+        List<Entrie> entriesFromBills = billAssembler.createEntriesFromBills(inDateBills);
+
+        List<Entrie> entriesFromPayments = paymentAssembler.createEntriesFromPayments(inDatePayment);
+
+        entriesFromBills.addAll(entriesFromPayments);
+        return entriesFromBills;
+    }
+
+    public ZonedDateTime buildStartingDate(Long startMonth, Long year) {
+        if (startMonth == null || startMonth == 0) {
             return ZonedDateTime.of(year.intValue(), 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
         } else {
             return ZonedDateTime.of(year.intValue(), startMonth.intValue(), 1, 0, 0, 0, 0, ZoneId.of("UTC"));
         }
     }
 
-    private ZonedDateTime buildEndingDate(Long endMonth, Long year) {
+    public ZonedDateTime buildEndingDate(Long endMonth, Long year) {
         ZonedDateTime zonedDateTime;
-        if (endMonth == 0 || endMonth == null) {
-            zonedDateTime = ZonedDateTime.of(year.intValue(), 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        if (endMonth == null || endMonth == 0) {
+            zonedDateTime = ZonedDateTime.of(year.intValue(), 12, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
 
         } else {
             zonedDateTime = ZonedDateTime.of(year.intValue(), endMonth.intValue(), 1, 0, 0, 0, 0, ZoneId.of("UTC"));

@@ -11,9 +11,6 @@ import java.util.List;
 @Entity
 public class Bill {
 
-
-    //TODO: Pourquoi 2 id
-    //TODO: id serait ok comme nom
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int dbId;

@@ -6,6 +6,7 @@ import ca.ulaval.glo4002.billing.domain.DueTerm;
 import ca.ulaval.glo4002.billing.domain.exceptions.ClientNotFoundException;
 
 public interface ClientRepository {
+    String CLIENTS_URL = "http://localhost:8080/clients/";
 
     Client getClient(ClientId clientId) throws ClientNotFoundException;
 

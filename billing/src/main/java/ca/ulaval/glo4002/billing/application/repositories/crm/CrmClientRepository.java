@@ -12,9 +12,6 @@ import java.io.FileNotFoundException;
 
 public class CrmClientRepository implements ClientRepository {
 
-    //TODO:Mettre le URL à l'extérieur pour le pilotage
-    private static final String CLIENTS_URL = "http://localhost:8080/clients/";
-
     private HttpRequester httpRequester;
 
     public CrmClientRepository() {
@@ -35,10 +32,6 @@ public class CrmClientRepository implements ClientRepository {
     }
 
     public DueTerm getDefaultDueTerm(ClientId clientId) throws ClientNotFoundException {
-        try {
-            return getClient(clientId).getDefaultTerm();
-        } catch (FileNotFoundException e) {
-            throw new ClientNotFoundException(clientId);
-        }
+        return getClient(clientId).getDefaultTerm();
     }
 }

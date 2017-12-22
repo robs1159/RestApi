@@ -13,6 +13,7 @@
         <module>crm</module>
         <module>billing</module>
         <module>application</module>
+        <module>UAT</module>
     </modules>
 
     <properties>
