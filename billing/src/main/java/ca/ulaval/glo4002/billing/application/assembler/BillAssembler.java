@@ -70,17 +70,21 @@ public class BillAssembler {
             ledgerDto.accountid = ledger.getAccountid();
             ledgerDto.entries = new ArrayList<>();
             for (Entrie entrie : ledger.getEntries()) {
-                EntrieDto entrieDto = new EntrieDto();
-                entrieDto.date = entrie.getDate();
-                entrieDto.typeTransaction = entrie.getTypeTransaction();
-                entrieDto.clientId = entrie.getClientId().getClientId();
-                entrieDto.typeOperation = entrie.getTypeOperation();
-                entrieDto.amount = entrie.getAmount();
-                entrieDto.balance = entrie.getBalance();
-                ledgerDto.entries.add(entrieDto);
+                ledgerDto.entries.add(toEntrieDto(entrie));
             }
             ledgerDtos.add(ledgerDto);
         }
         return ledgerDtos;
+    }
+
+    public EntrieDto toEntrieDto(Entrie entrie) {
+        EntrieDto entrieDto = new EntrieDto();
+        entrieDto.date = entrie.getDate();
+        entrieDto.typeTransaction = entrie.getTypeTransaction();
+        entrieDto.clientId = entrie.getClientId().getClientId();
+        entrieDto.typeOperation = entrie.getTypeOperation();
+        entrieDto.amount = entrie.getAmount();
+        entrieDto.balance = entrie.getBalance();
+        return entrieDto;
     }
 }

@@ -32,7 +32,8 @@ public class PaymentAssembler {
     public List<Entrie> createEntriesFromPayments(List<Payment> payments) {
         List<Entrie> entries = new ArrayList<>();
         for (Payment payment : payments) {
-            Entrie entrie = new Entrie(payment.getDate().toInstant(),
+            Entrie entrie = new Entrie(
+                    payment.getDate().toInstant(),
                     TransactionType.PAYMENT,
                     payment.getClientId(),
                     OperationType.DEBIT,
